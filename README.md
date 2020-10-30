@@ -1,6 +1,6 @@
-#dcm4chee4portainer
+# dcm4chee4portainer
 
-Imagen docker de PACS **"dcm4chee 2.18.3"** para uso desde un docker-compose que incluya también una imagen docker **"msyql 5.7"**.
+**Imagen docker** de PACS **"dcm4chee 2.18.3"** para uso desde un docker-compose que incluya también una imagen docker **"msyql 5.7"**.
 
 La plataforma de destino de tal composer es una aplicación de tipo **"Portainer"** que se encuentra en varios NAS para transformar el NAS en PACS completo juntando aplicación y storage.
 
