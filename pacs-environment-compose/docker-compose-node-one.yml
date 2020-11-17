@@ -1,0 +1,60 @@
+# this file provides a full PACS environment
+
+version: '2'
+services:
+
+     db:
+       image: mysql
+       environment:
+         MYSQL_ROOT_PASSWORD: root
+       networks:
+         - dcm4chee
+       volumes:
+         - /storage/data/db:/var/lib/mysql
+       deploy:
+         mode: replicated
+         replicas: 1
+
+     pacs:
+       image: marceloaguero/dcm4chee:2.18.3
+       networks:
+         - dcm4chee-int
+         - dcm4chee-out
+       ports:
+         - 11113:11112/tcp
+         - 8081:8080/tcp
+       volumes:
+         - /storage/data/dcm4chee-default:/opt/dcm4chee/server/default
+       deploy:
+         mode: replicated
+         replicas: 1
+       depends_on:
+         - mysql-dcm4chee
+
+   networks:
+     dcm4chee-int:
+       driver: overlay
+       internal: true
+     dcm4chee-out:
+       external: true
+
+    dcm4chee-arc:
+        image: opendicom/dcm4chee-arc-light:5.5.1
+        ports:
+            - "8080:8080"
+            - "9990:9990"
+            - "11112:11112"
+            - "2575:2575"
+        env_file: docker-compose.env
+        environment:
+            WILDFLY_CHOWN: /opt/wildfly/standalone /storage
+            WILDFLY_WAIT_FOR: ldap:389 db:3306
+            JAVA_OPTS: -server -Xms64m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true
+        links:
+            - mariadb-galera:db
+        volumes:
+            - ./storage:/storage
+            - ./wildfly:/opt/wildfly/standalone
+            # same time and date for all containers
+            - /etc/timezone:/etc/timezone
+            - /etc/localtime:/etc/localtime

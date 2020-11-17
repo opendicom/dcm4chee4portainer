@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+
+  mysql-dcm4chee:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: deluxscan
+    networks:
+      - dcm4chee
+    volumes:
+      - /storage/data/mysql-dcm4chee:/var/lib/mysql
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  pacs:
+    image: marceloaguero/dcm4chee:2.18.3
+    networks:
+      - dcm4chee-int
+      - dcm4chee-out
+    ports:
+      - 11113:11112/tcp
+      - 8081:8080/tcp
+    volumes:
+      - /storage/data/dcm4chee-default:/opt/dcm4chee/server/default
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - mysql-dcm4chee
+
+networks:
+  dcm4chee-int:
+    driver: overlay
+    internal: true
+  dcm4chee-out:
+    external: true
