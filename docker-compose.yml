@@ -1,0 +1,36 @@
+version: '2.3'
+services:
+     db:
+        image: mysql:5.7
+        container_name: pacs-db
+        environment:
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MYSQL_DATABASE}
+          MYSQL_USER: ${MYSQL_USER}
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD} 
+        ports:
+          - 13306:3306
+        volumes:
+          - ${ARCHIVE_VOLUME}:/var/lib/mysql
+          - ./create-mysql.sql:/docker-entrypoint-initdb.d/create-mysql.sql
+
+     pacs:
+        container_name: pacs-app
+        image: dcm4chee-2.18.3
+        build:
+          context: ./imagen-pacs
+          dockerfile: ./Dockerfile
+          args: 
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        depends_on: 
+          - db
+        ports:
+            - 8080:8080 
+            - 11112:11112
+        volumes:
+          - ${MYSQL_VOLUME}:/opt/dcm4chee/server/default/archive
+          - dcm4chee-default:/opt/dcm4chee/server/default
+volumes:
+     dcm4chee-default:     
