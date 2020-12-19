@@ -1,0 +1,4 @@
+*.DS_Store
+doc/Dcm4cheeOnDebian/dcm4chee-mysql_2.18.3.1_amd64.deb
+doc/WeasisNativeForDcm4chee-web3/dcm4chee-web-weasis.jar
+doc/WeasisNativeForDcm4chee-web3/weasis-pacs-connector.war
