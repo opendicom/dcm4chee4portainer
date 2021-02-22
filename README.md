@@ -1,5 +1,3 @@
-# nasdicom
-
 # Introducción
 
 **nasdicom** es una solución completa de PACS desarrollada para plataforma Docker. Se basa en varias imágenes ya disponibles pero ajustadas para cumplir algunos requerimientos extras.
