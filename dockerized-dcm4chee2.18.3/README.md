@@ -13,13 +13,13 @@ Se equipó esta imagen con el demonio cron ejecutado en segundo plano, pues es p
 
 ## Construir la imagen
 ```bash
-$ docker build -t dockerized-dcm4chee2.18.3:v1.0 .
+docker build -t dockerized-dcm4chee2.18.3:v1.0 .
  ```
 ## Iniciar un nuevo contenedor sin persistencia
 
 Esta instancia es absolutamente de prueba, pues cualquier configuración o archivo enviado será eliminado al finalizar el contenedor. 
 ```bash
-$ docker run --rm --name nombre_contenedor -d dockerized-dcm4chee2.18.3:v1.0
+docker run --rm --name nombre_contenedor -d dockerized-dcm4chee2.18.3:v1.0
 ```
 
 # Persistencia
@@ -41,7 +41,7 @@ Este ejemplo asume tener 1 directorio creado previamente para repositorio dicom.
 /data/archive/
 ```
 ```bash
-$ docker run --name nombre_contenedor -d \
+docker run --name nombre_contenedor -d \
 	-v /data/archive:/opt/dcm4chee/server/default/archive/ \
 	-v dcm4chee_vol:/opt/dcm4chee/server/default/ \
 	dockerized-dcm4chee2.18.3:v1.0
@@ -66,7 +66,7 @@ En el directorio de este repositorio existe un archivo de configuración de ejem
 Asumimos que existe el archivo `/host/path/crontab_pacs` en el host docker y que tiene una configuración de cron adecuada.
 
 ```bash
-$ docker run --name nombre_contenedor -d \
+docker run --name nombre_contenedor -d \
     -v /data/archive:/opt/dcm4chee/server/default/archive/ \
 	-v dcm4chee_vol:/opt/dcm4chee/server/default/ \
     -v /host/path/crontab_pacs:/etc/crontab

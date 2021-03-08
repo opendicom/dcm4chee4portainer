@@ -15,17 +15,23 @@ Crear un clon del repositorio en un nas donde ya esté instalado docker y docker
 ## Creación de la imagen dockerized-dcm4chee2.18.3
 
 ```bash
-$ docker build --rm -f "dockerized-dcm4chee.2.18.3/Dockerfile" -t dockerized-dcm4chee.2.18.3:v1.0 "dockerized-dcm4chee.2.18.3"
+docker build --rm -t dockerized-dcm4chee2.18.3:v1.0 dockerized-dcm4chee2.18.3/
 ```
 
 ## Creación de la imagen docker-cron
 
 ```bash
-$ docker build --rm -f "dockerized-cron/Dockerfile" -t dockerized-cron:v1.0 "dockerized-cron"
+docker build --rm -t dockerized-cron:v1.0 dockerized-cron/
 ```
 
+# Persistencia 
+
+Por defecto el directorio `data` de este repositorio es el destinado a persistir los datos mysql, respaldos y archive dicom. Si desea utilizar este directorio no es necesario realizar ninguna preparación extra en el host docker. De lo contrario, si desea ajustar los directorios de persistencia siga los siguientes pasos:
+
 ## Preparar el host docker
-Es necesario crear algunos directorios y archivos en el host docker para permitir la persistencia de los datos. Suponemos los siguientes directorios y archivos creados.
+
+Crear el grupo de directorios necesarios, para este ejemplo se asumen los siguientes:
+
 ```bash
 /host/path/archive/     # Almacén de archivos dicom
 /host/path/mysql/       # Almacén de base de datos
@@ -73,15 +79,15 @@ A continuación se muestra solo un extracto del archivo docker-compose.yml donde
             [...]
 ```
 
-### Ahora solo queda iniciar el compose
+# Iniciar el compose
 
 ```bash
-$ docker-compose -f "docker-compose.yml" up -d 
+docker-compose -f "docker-compose.yml" up -d 
 ```
 
 # Portainer.io
 Incluimos en este proyecto un docker-compose de [portainer.oi](https://www.portainer.io/) con el propósito de facilitar la administración y mantenimiento de la plataforma docker desde una aplicación web sin necesidad de tener acceso al nas. Para instanciar portainer.io:
 ```bash
-$ cd portainer
-$ docker-compose -f "docker-compose.yml" up -d 
+cd portainer
+docker-compose -f "docker-compose.yml" up -d 
 ```

@@ -19,6 +19,7 @@ RUN curl -L -O http://downloads.sourceforge.net/project/dcm4che/dcm4chee/2.18.3/
 
 # Instalacion de JBoss 4.2.3.GA
 COPY install_jboss.sh /opt/dcm4chee/bin/
+RUN chmod 755 /opt/dcm4chee/bin/install_jboss.sh
 RUN curl -L -O http://downloads.sourceforge.net/project/jboss/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA.zip \
   && unzip jboss-4.2.3.GA.zip -d /opt \
   && rm -f jboss-4.2.3.GA.zip \
@@ -46,8 +47,6 @@ RUN mv weasis-pacs-connector.war /opt/dcm4chee/server/default/deploy/
 RUN mv dcm4chee-web-weasis.jar /opt/dcm4chee/server/default/deploy/
 RUN mkdir -p /opt/dcm4chee/server/default/data/xmbean-attrs/
 COPY dcm4chee.web@3Aservice@3DWebConfig.xml /opt/dcm4chee/server/default/data/xmbean-attrs/
-
-VOLUME /opt/dcm4chee/server/default
 
 EXPOSE 8080 11112
 COPY init_wrapper_script.sh init_wrapper_script.sh

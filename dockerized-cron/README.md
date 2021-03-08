@@ -8,13 +8,13 @@ Está basado de forma muy cercana con el [articulo](https://lostindetails.com/ar
 
 ## Construir la imagen
 ```bash
-$ docker build -t dockerized-cron:v1.0 .
+docker build -t dockerized-cron:v1.0 .
 ```
 ## Iniciar un nuevo contenedor sin persistencia
 
 Esta instancia es absolutamente de prueba, pues cualquier respaldo, script o tarea programada creada dentro del contenedor será eliminado al finalizar el mismo. 
 ```bash
-$ docker run --rm --name nombre_contenedor -d dockerized-cron:v1.0
+docker run --rm --name nombre_contenedor -d dockerized-cron:v1.0
 ```
 
 # Persistencia
@@ -46,7 +46,7 @@ Este ejemplo asume tener 3 directorios y un archivo vacío creado en el host doc
 ```
 
 ```bash
-$ docker run --name nombre_contenedor -d \
+docker run --name nombre_contenedor -d \
 	-v /data/source:/data_src:ro \
 	-v /data/destino:/data_dst \
 	-v /data/scripts:/scripts \
@@ -94,5 +94,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 Como se ve en el ejemplo, es muy recomendable redireccionar la salida stdout/stderr de los scripts hacia el pid 1. De esta forma se logra obtener la salida de los scripts (logs) desde docker con 
 ```bash
-$ docker logs nombre_contenedor
+docker logs nombre_contenedor
 ```
