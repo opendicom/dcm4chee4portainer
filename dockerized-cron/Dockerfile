@@ -17,11 +17,6 @@ RUN apt-get update \
 # backups-dst -> Destino de los respaldos
 # backups-src -> Origen de los respaldos
 
-RUN mkdir {scripts,data_dst,data_src}
-
-# Definición de los volumenes a utilizar
-VOLUME [ "/scripts" ]
-VOLUME [ "/data_dst" ]
-VOLUME [ "/data_src" ]
+RUN mkdir /scripts /data_dst /data_src
 
 CMD ["/usr/sbin/cron", "-f"]

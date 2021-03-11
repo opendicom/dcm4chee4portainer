@@ -6,6 +6,7 @@
 
 SHELL=/bin/sh
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+TZ=America/Argentina/Buenos_Aires
 
 # Example of job definition:
 # .---------------- minute (0 - 59)
