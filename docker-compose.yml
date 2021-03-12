@@ -41,7 +41,7 @@ services:
           - pacsapp_volume:/opt/dcm4chee/server/default 
           
           # Archivo contab con las tareas programadas del pacs
-          - ./dockerized-dcm4chee2.18.3/crontab_ejemplo:/etc/crontab
+          - ./dockerized-dcm4chee2.18.3/crontab_file:/crontab_file
 
   rproxy:
         container_name: pacs-rproxy
@@ -64,7 +64,7 @@ services:
             TZ: 'America/Argentina/Buenos_Aires'
         volumes: 
           # Directoio con los scripts utilizados para hacer los respaldos
-          - ./dockerized-cron/script:/scripts
+          - ./dockerized-cron/scripts:/scripts
 
           # Directorio donde almacenar los respaldos (host docker)
           - ./data/respaldos:/data_dst
@@ -74,7 +74,7 @@ services:
           - pacsapp_volume:/data_src/dcm4chee:ro
 
           # Archivo contab con las tareas programadas de cron
-          - ./dockerized-cron/crontab_ejemplo:/etc/crontab
+          - ./dockerized-cron/crontab_file:/crontab_file
 volumes:
     # Named Volume donde se almacena la configuración del pacs
     pacsapp_volume:

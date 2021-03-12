@@ -1,0 +1,12 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+TZ=America/Argentina/Buenos_Aires
+
+#*/15 * * * *    echo `date +[\%Y\%m\%d\ \%T]` - Cron its alive!  > /proc/1/fd/1 2>/proc/1/fd/2
+
+#0 1 * * *    /scripts/backup_jboss.sh > /proc/1/fd/1 2>/proc/1/fd/2
+#0 3 * * *    /scripts/backup_mysql.sh > /proc/1/fd/1 2>/proc/1/fd/2
+
+
+*/1 * * * *    echo `date +[\%Y\%m\%d\ \%T]` - Cron its alive!  > /proc/1/fd/1 2>/proc/1/fd/2
+

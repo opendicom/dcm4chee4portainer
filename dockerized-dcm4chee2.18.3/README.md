@@ -14,7 +14,7 @@ Se equipó esta imagen con el demonio cron ejecutado en segundo plano, pues es p
 ## Construir la imagen
 ```bash
 docker build -t dockerized-dcm4chee2.18.3:v1.0 .
- ```
+```
 ## Iniciar un nuevo contenedor sin persistencia
 
 Esta instancia es absolutamente de prueba, pues cualquier configuración o archivo enviado será eliminado al finalizar el contenedor. 
@@ -33,9 +33,9 @@ Esta imagen admite persistir varios componentes. Se utilizan los volúmenes de d
  ### Repositorio DICOM
 
  Por defecto dcm4chee configura el repositorio de archivos dicom en el directorio `/opt/dcm4chee/server/default/archive`. Utilizando un volumen en este directorio se persiste el repositorio.
- 
+
 ## Iniciar un nuevo contenedor con persistencia
- 
+
 Este ejemplo asume tener 1 directorio creado previamente para repositorio dicom.
 ```bash
 /data/archive/
@@ -49,25 +49,44 @@ docker run --name nombre_contenedor -d \
 
 Nótese la diferencia entre los volúmenes. El primer volumen es de tipo Bind y el segundo Named volume.
 
-## Cron
-Para configurar tareas en cron basta con montar un archivo del host docker sobre `/etc/crontab` en el contenedor.
-En el directorio de este repositorio existe un archivo de configuración de ejemplo `crontab_ejemplo`.
-```bash    
-## Apagado del jboss todos los días a las 4:00 am
-#0 4 * * * root pkill -15 java
+# Cron
+Cron por defecto busca cambios en  `/etc/crontab`y `/etc/cron.d/*`  cuando detecta un cambio en alguno de los archivos actualiza su lista de tareas a memoria para ejecutar las mismas cuando corresponda. Este comportamiento funciona a la perfección desde un sistema operativo completo, pero puede fallar desde algunos contenedores, es decir cuándo hay un cambio en un archivo de configuración cron no lo detecta y por lo tanto no instala la nueva tarea en memoria.
 
-## Borrado de logs los 1ros de cada mes
-#0 0 1 * * root rm -f /opt/dcm4chee/server/default/log/server.log.*
+Por tal motivo dockerized-dcm4chee2.18.3 maneja cron con cierta peculiaridad. Existe un archivo `/crontab_file` quien contiene la configuración de cron deseada. Cada vez que el contenedor es creado carga la configuración de este archivo a memoria. Si este archivo es cambiado luego de que el contenedor inició será necesario cargar manualmente a memoria la configuración o reiniciar el contenedor.
+
+## Cargar la configuración de cron de forma manual
+
+Para cargar de forma manual la configuración de cron luego que modificó el archivos /crontab_file
+
+```bash
+docker exec -it nombre_contenedor bash
+crontab /crontab_file
 ```
 
+## Log de tareas
 
-## Iniciar un nuevo contenedor con persistencia y cron
+Para ver la salida de las tareas es necesario redirigir stdin y stdout hacia el proceso con pid 1. De esta forma podremos observar los logs con el comando de Docker
 
-Asumimos que existe el archivo `/host/path/crontab_pacs` en el host docker y que tiene una configuración de cron adecuada.
+```bash
+docker logs nombre_contenedor
+```
+
+Para redirigir las salidas, en el archivo `/crontab_file` debemos agregar la tarea programada de la siguiente forma:
+
+```bash
+0 1 * * * /scripts/s1.sh > /proc/1/fd/1 2>/proc/1/fd/2
+```
+
+Nótese en este caso la salida de las tareas quedaran mezcladas con la salida de dcm4chee
+
+# Iniciar un nuevo contenedor con persistencia y cron
+
+Asumimos que existe el archivo `/host/path/crontab_file` en el host docker y que tiene una configuración de cron adecuada.
 
 ```bash
 docker run --name nombre_contenedor -d \
     -v /data/archive:/opt/dcm4chee/server/default/archive/ \
 	-v dcm4chee_vol:/opt/dcm4chee/server/default/ \
-    -v /host/path/crontab_pacs:/etc/crontab
+    -v /host/path/crontab_file:/crontab_file
 	dockerized-dcm4chee2.18.3:v1.0
+```

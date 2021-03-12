@@ -18,5 +18,6 @@ RUN apt-get update \
 # backups-src -> Origen de los respaldos
 
 RUN mkdir /scripts /data_dst /data_src
+RUN touch /crontab_file
 
-CMD ["/usr/sbin/cron", "-f"]
+CMD crontab /crontab_file && /usr/sbin/cron -f

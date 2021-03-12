@@ -8,7 +8,7 @@ set -m
   
 # Start and configure the cron process
 /usr/sbin/cron
-echo "$CRON_TASK" | crontab -
+crontab /crontab_file
 
 
 

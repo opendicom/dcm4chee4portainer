@@ -33,12 +33,15 @@ COPY libclib_jiio.so /opt/dcm4chee/bin/native/
 # Ajuste de la conexion a la base de datos, se cambia el host por defecto (localhost) a db
 RUN sed -i "s|localhost:3306/pacsdb|db:3306/pacsdb|g" /opt/dcm4chee/server/default/deploy/pacs-mysql-ds.xml
 
-#Instalacion de weasis
+# Instalacion de weasis
 RUN curl -L -O https://sourceforge.net/projects/dcm4che/files/Weasis/3.6.2/weasis.war \
 	&& curl -L -O https://sourceforge.net/projects/dcm4che/files/Weasis/3.6.2/weasis-i18n.war \
 	&& curl -L -O https://sourceforge.net/projects/dcm4che/files/Weasis/3.6.2/weasis-ext.war \
 	&& curl -L -O https://sourceforge.net/projects/dcm4che/files/Weasis/weasis-pacs-connector/6.1.5/weasis-pacs-connector.war \
     && curl -L -O https://sourceforge.net/projects/dcm4che/files/Weasis/weasis-pacs-connector/6.1.5/dcm4chee-web-weasis.jar
+
+# Instalacion de archivo crontab
+RUN touch /crontab_file
 
 RUN mv weasis.war /opt/dcm4chee/server/default/deploy/
 RUN mv weasis-i18n.war /opt/dcm4chee/server/default/deploy/
