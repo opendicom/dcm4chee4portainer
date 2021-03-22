@@ -118,3 +118,22 @@ Ante cualquier comportamiento extraño de un contenedor lo primero 2do a probar 
 
   ![portainer_operar](./img/portainer_operar.png)
 
+
+
+## Respaldos
+
+Los respaldos son almacenados en el **volumen tipo bind** definido en el docker-compose.yml servicio backups 
+
+```yaml
+backups:
+		...
+		volumes:
+				...
+				# Directorio donde almacenar los respaldos (host docker)
+				- ./data/respaldos:/data_dst
+```
+
+En este ejemplo y por defecto en nasdicom los respaldos se almacenan en el mismo equipo en `./data/respaldos`. Es muy recomendable NO se guarden aquí dado que se falla el equipo se pierde el sistema y los respaldos. Para ello la opción que se maneja aquí es montar una unidad compartida NFS sobre la carpeta `./data/respaldos`. De está forma  sin modificar la configuración ya estamos respaldando los datos en otro equipo.
+
+Para mas información de como montar un recurso compartido NFS en Synology: [https://www.synology.com/en-global/knowledgebase/DSM/help/FileStation/mountremotevolume](https://www.synology.com/en-global/knowledgebase/DSM/help/FileStation/mountremotevolume)
+

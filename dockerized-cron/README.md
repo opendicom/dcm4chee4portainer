@@ -25,7 +25,7 @@ Por tal motivo dockerized-cron maneja cron con cierta peculiaridad. Existe un ar
 
 ## Cargar la configuración de cron de forma manual
 
-Para cargar de forma manual la configuración de cron luego que modificó el archivos /crontab_file
+Para cargar de forma manual la configuración de cron luego que modificó el archivo `/crontab_file`
 
 ```bash
 docker exec -it nombre_contenedor bash
@@ -56,7 +56,7 @@ Esta imagen admite persistir varios componentes. Se utilizan los volumenes de do
 
  ### Tareas programadas
 
- La configuración de esto se encuentra en `/crontab_file . Persistiendo este archivo no se pierde la configuración realizada.
+ La configuración de esto se encuentra en `/crontab_file` . Persistiendo este archivo no se pierde la configuración realizada.
 
  ### Directorio de datos
 
