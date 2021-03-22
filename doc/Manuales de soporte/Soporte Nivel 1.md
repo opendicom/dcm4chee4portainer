@@ -43,7 +43,7 @@ Todos los contenedores nombrados como **`pacs-*`** deben estar con **STATUS UP**
 
 - Web
 
-  ![portainer_contenedores2](/Volumes/Clientes/Clientes/Maciel/Synology RS3618xs/Migracion dockerized-dcm4chee a nasdicom/img/portainer_contenedores2.png)
+  ![portainer_contenedores2](img/portainer_contenedores2.png)
 
   
 
