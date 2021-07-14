@@ -5,18 +5,12 @@ El software utilizado es **dcm4chee 2.18.3** como pacs, **mysql 5.7** como motor
 
  Todo esto lanzado desde un compose que unifica los servicios en un único Stack brindando la solución completa. Como lo indica su nombre **nasdicom** fue pensado con la meta de ser instalado en un NAS para transformar a éste en un PACS completo juntando aplicación y storage.
 
-# Imágenes personalizadas
-En los directorios `dockerized-dcm4chee2.18.3` y `dockerized-cron` se encuentran la información necesaria para construir las imágenes utilizadas en el compose así como también documentación de su uso.
+# Imagen personalizada
+En el directorio `dockerized-cron` se encuentran la información necesaria para construir la imagen utilizada en el compose así como también documentación de su uso.
 
 # Construcción de nasdicom
 
 Crear un clon del repositorio en un nas donde ya esté instalado docker y docker-compose
-
-## Creación de la imagen dockerized-dcm4chee2.18.3
-
-```bash
-docker build --rm -t dockerized-dcm4chee2.18.3:v1.0 dockerized-dcm4chee2.18.3/
-```
 
 ## Creación de la imagen docker-cron
 
@@ -42,11 +36,15 @@ Crear el grupo de directorios necesarios, para este ejemplo se asumen los siguie
 /host/path/data_dst/    # para almacenar los datos de salida de los scripts de dockerized-cron
 ```
 
+
+
 ## Configurar docker-compose.yml con las carpetas y archivos creados anteriormente
+
 A continuación se muestra solo un extracto del archivo docker-compose.yml donde se deben actualizar los parámetros.
+
 ```yml
     services:
-        db:
+        mysql:
             volumes:
                 # Directorio donde se almacenan los datos de MYSQL (BIND MOUNT)
                 - /host/path/mysql/:/var/lib/mysql
@@ -66,7 +64,7 @@ A continuación se muestra solo un extracto del archivo docker-compose.yml donde
                 - /host/path/reverse-proxy.conf:/etc/nginx/nginx.conf:ro 
             [...]
             
-        backups:
+        cron:
             volumes: 
                 # Directorio con los scripts utilizados para hacer los respaldos
                 - /host/path/scripts/:/scripts

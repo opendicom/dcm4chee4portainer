@@ -1,80 +1,83 @@
 version: '3.7'
 services:
-  db:
-        container_name: pacs-db
+  mysql:
+        container_name: opendicom_mysql
         image: mysql:5.7
         restart: unless-stopped
         environment:
+          TZ: 'America/Argentina/Buenos_Aires'
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: pacsdb
           MYSQL_USER: pacs
           MYSQL_PASSWORD: pacs
-          TZ: 'America/Argentina/Buenos_Aires'
-        ports:
-          - 13306:3306
         volumes:
           # Directorio donde se almacenan los datos de MYSQL (BIND MOUNT)
           - ./data/mysql:/var/lib/mysql
-          
+
           # Script para crear la db en el caso que no exista.
           - ./create-mysql.sql:/docker-entrypoint-initdb.d/create-mysql.sql
 
-  pacs:
-        container_name: pacs-app
-        image: dockerized-dcm4chee2.18.3:v1.0
+  dcm4chee:
+        container_name: opendicom_dcm4chee
+        image: opendicom/dcm4chee-2.18.3:latest # You may want to change the tag name
         restart: unless-stopped
-        depends_on: 
-            - db
-        environment: 
-            # Configuracion de valores Xms y Xmx (uso de memoria) del pacs.
-            JAVA_OPTS: "-Ddcm4che.archive.nodename=DCM4CHEE -Xms512m -Xmx1024m -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
-            
-            TZ: 'America/Argentina/Buenos_Aires'
+        depends_on:
+          - mysql
+        environment:
+          TZ: 'America/Argentina/Buenos_Aires'
+          MYSQL_HOST: opendicom_mysql   # Same as container_name or mysql service name
+          MYSQL_PORT: 3306              # Default: 3306   Change if needed
+          MYSQL_DATABASE: pacsdb        # Default: pacsdb Change if needed, same as MYSQL_DATABASE in mysql service
+          MYSQL_USER: pacs              # Default: pacs   Change if needed, same as MYSQL_USER in mysql service
+          MYSQL_PASSWORD: pacs          # Default: pacs   Change if needed, same as MYSQL_PASSWORD in mysql service
+          MYSQL_CONNECT_RETRY: 30       # Default: 30     Change if needed.
+          JAVA_OPTS: "-Ddcm4che.archive.nodename=DCM4CHEE -Xms512m -Xmx1024m -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
         ports:
-            - 8080:8080 
-            - 11112:11112
+          - 8080:8080
+          - 11112:11112
         volumes:
+          # Named Volume donde se almacena la configuración del pacs
+          - dcm4chee_conf:/opt/dcm4chee/server/default/
+
           # Directorio donde se almacenan los archivos DICOM del PACS (BIND MOUNT)
           - ./data/archive:/opt/dcm4chee/server/default/archive
 
-           # Named Volume donde se almacena la configuración del pacs
-          - pacsapp_volume:/opt/dcm4chee/server/default 
-          
           # Archivo contab con las tareas programadas del pacs
-          - ./dockerized-dcm4chee2.18.3/crontab_file:/crontab_file
+          - ./crontab_file_pacs:/crontab_file
 
   rproxy:
-        container_name: pacs-rproxy
+        container_name: opendicom_rproxy
         image: nginx:stable
         restart: unless-stopped
-        environment: 
+        environment:
             TZ: 'America/Argentina/Buenos_Aires'
         ports:
-            - 80:80 
+            - 80:80
         volumes:
-          # Archivo de configuracion del proxy reverso 
-          - ./dockerized-rproxy/reverse-proxy.conf:/etc/nginx/nginx.conf:ro 
-  backups:
-        container_name: pacs-bkps
+          # Archivo de configuracion del proxy reverso
+          - ./dockerized-rproxy/reverse-proxy.conf:/etc/nginx/nginx.conf:ro
+  cron:
+        container_name: opendicom_cron
         image: dockerized-cron:v1.0
         restart: unless-stopped
-        depends_on: 
-            - db
-        environment: 
+        depends_on:
+            - dcm4chee
+        environment:
             TZ: 'America/Argentina/Buenos_Aires'
-        volumes: 
+        volumes:
           # Directoio con los scripts utilizados para hacer los respaldos
           - ./dockerized-cron/scripts:/scripts
 
           # Directorio donde almacenar los respaldos (host docker)
           - ./data/respaldos:/data_dst
 
-          # Volumen con el diretorio default del jboss de dcm4chee (servicio pacs)
+          # Volumen con el diretorio default del jboss de dcm4chee
           # Se monta en este contenedor tambien para tener acceo a los datos y hacer el respaldo
-          - pacsapp_volume:/data_src/dcm4chee:ro
+          - dcm4chee_conf:/data_src/dcm4chee:ro
 
           # Archivo contab con las tareas programadas de cron
           - ./dockerized-cron/crontab_file:/crontab_file
 volumes:
-    # Named Volume donde se almacena la configuración del pacs
-    pacsapp_volume:
+  dcm4chee_conf:
+  dcm4chee_dicom:
+  mysql_data:
